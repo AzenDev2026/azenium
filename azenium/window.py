@@ -127,12 +127,17 @@ class BrowserWindow(QMainWindow):
     # 标签页管理
     # ==================================================================
     def _default_tab_url(self) -> QUrl:
-        """新标签页目标：内置极简页（带主题参数）或用户自定义网址。"""
+        """新标签页目标：内置极简页（带主题参数）或用户自定义网址。
+
+        主题参数放在 fragment（#...）里而不是 query——QtWebEngine 对带
+        query 的 file:// 地址处理有坑（可能崩溃），fragment 是纯客户端
+        行为，完全安全。
+        """
         if self.cfg.get("new_tab") == "custom":
             return QUrl(self.cfg["new_tab_url"])
         url = QUrl.fromLocalFile(str(NEWTAB_INDEX))
         accent = theme.accent_color(self.cfg["style"], self.cfg["theme"]).lstrip("#")
-        url.setQuery(f"theme={self.cfg['theme']}&accent={accent}")
+        url.setFragment(f"theme={self.cfg['theme']}&accent={accent}")
         return url
 
     def _new_tab(self, url: str | None = None):
@@ -154,6 +159,7 @@ class BrowserWindow(QMainWindow):
         widget = self.stack.widget(index)
         self.tab_bar.removeTab(index)
         self.stack.removeWidget(widget)
+        widget.setParent(None)  # 立即脱离界面，避免 deleteLater 前的僵尸引用
         widget.deleteLater()
         if self.tab_bar.count() == 0:
             # 最后一个标签被关掉时，自动开一个新标签页而不是退出
@@ -192,9 +198,12 @@ class BrowserWindow(QMainWindow):
     def _on_tab_url(self, tab, url: QUrl):
         if tab is not self._current_tab() or self._urlbar_editing:
             return
-        text = url.toString()
-        if text in ("about:blank", ""):
-            text = ""
+        if url.isLocalFile():
+            text = ""  # 内置新标签页不把本地路径显示到地址栏
+        else:
+            text = url.toString()
+            if text == "about:blank":
+                text = ""
         self.urlbar.setText(text)
 
     def _on_tab_loading(self, tab, loading: bool):
@@ -211,8 +220,11 @@ class BrowserWindow(QMainWindow):
         self.stack.setCurrentIndex(index)
         self._sync_nav_state(tab)
         if not self._urlbar_editing:
-            text = tab.view.url().toString()
-            self.urlbar.setText("" if text == "about:blank" else text)
+            url = tab.view.url()
+            if url.isLocalFile() or url.toString() == "about:blank":
+                self.urlbar.setText("")
+            else:
+                self.urlbar.setText(url.toString())
         self.setWindowTitle(f"{tab.view.title() or '新标签页'} — {APP_NAME}")
 
     def _sync_nav_state(self, tab):
@@ -316,6 +328,10 @@ class BrowserWindow(QMainWindow):
             tab = self.stack.widget(i)
             if tab is None:
                 continue
-            path = tab.view.url().toLocalFile()
-            if path and path.endswith("index.html"):
-                tab.load(self._default_tab_url())
+            try:
+                path = tab.view.url().toLocalFile()
+                if path and path.endswith("index.html"):
+                    tab.load(self._default_tab_url())
+            except RuntimeError:
+                # 已删除（deleteLater 待回收）的标签跳过
+                continue

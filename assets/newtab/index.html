@@ -152,9 +152,10 @@ body {
 </div>
 
 <script>
-// ---------- Theme parameters (injected by the browser) ----------
+// ---------- Theme parameters (injected by the browser as URL fragment) ----------
 (function () {
-    const params = new URLSearchParams(location.search);
+    // Parameters arrive as #theme=dark&accent=xxxxxx (fragment, safe for file:// URLs)
+    const params = new URLSearchParams(location.hash.replace(/^#/, ""));
     if (params.get("theme") === "light") document.body.classList.add("light");
     const accent = params.get("accent");
     if (accent && /^[0-9a-fA-F]{6}$/.test(accent)) {
