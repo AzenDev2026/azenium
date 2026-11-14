@@ -4,7 +4,7 @@ Azen 的第一款浏览器 —— 基于 **Chromium 内核**（QtWebEngine）的
 
 > 内核版本：Chromium 130+（随 Qt 6.11 WebEngine）｜ 开发语言：Python 3 + PyQt6
 
-## ✨ 功能（v0.1.0）
+## ✨ 功能（v0.2.0）
 
 - **多标签页浏览**
   - `Ctrl+T` 或双击标签栏空白处 → 新建标签
@@ -16,15 +16,33 @@ Azen 的第一款浏览器 —— 基于 **Chromium 内核**（QtWebEngine）的
 - **新标签页** 默认打开 <https://azen.dev/search>（可在设置中修改）
 - **外观设置**（⚙ 按钮打开）
   - UI 风格：**现代**（直角蓝色）/ **圆润**（胶囊紫色）/ **简洁**（极简扁平）
-  - 外观模式：**深色** / **浅色**，保存后即时生效
+  - 外观模式：**深色**（#202020 基调）/ **浅色**，保存后即时生效
   - 界面字号可调（8–20px）
 - **配置持久化**：所有设置保存在 `~/.azenium/settings.json`
+- **桌面集成**：自带图标（渐变地球设计）、可安装到应用菜单
 
 ## 🚀 运行
 
 ```bash
 cd ~/Desktop/azenium
 ./run.sh          # 首次运行会自动创建 .venv 并安装依赖
+```
+
+## 📦 安装到应用菜单（像正常软件一样使用）
+
+```bash
+cd ~/Desktop/azenium
+./install.sh      # 无需 sudo，全部装到用户目录
+```
+
+装好后在 KDE 应用菜单（Internet 分类）里就能找到 **Azenium**，也可以
+右键桌面 → 创建链接到应用 → Azenium 放到桌面。卸载：删除
+`~/.local/share/applications/azenium.desktop` 即可。
+
+### 重新生成图标
+
+```bash
+.venv/bin/python tools/make_icon.py   # 重新生成后需再跑 ./install.sh
 ```
 
 `run.sh` 使用项目自带的虚拟环境（`.venv`），里面是配套的
@@ -57,9 +75,15 @@ cd ~/Desktop/azenium
 
 ```
 azenium/
-├── main.py                 # 入口
-├── run.sh                  # 启动脚本
+├── main.py                 # 入口（窗口图标 / 桌面集成）
+├── run.sh                  # 启动脚本（自动管理 .venv）
+├── install.sh              # 安装到应用菜单
 ├── requirements.txt
+├── assets/
+│   ├── azenium.png         # 窗口图标
+│   └── icons/hicolor/…     # 多尺寸图标（安装用）
+├── tools/
+│   └── make_icon.py        # 图标生成脚本（QPainter 绘制）
 └── azenium/
     ├── __init__.py         # 应用名与版本
     ├── config.py           # 配置读写（~/.azenium/settings.json）

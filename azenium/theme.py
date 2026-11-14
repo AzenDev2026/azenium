@@ -10,15 +10,16 @@ from PyQt6.QtWidgets import QApplication
 # ---------------------------------------------------------------------------
 
 _DARK = {
-    "window_bg": "#14161a",
-    "toolbar_bg": "#1b1e23",
-    "surface": "#252a31",
-    "surface_hover": "#2e343d",
-    "text": "#e6e8ec",
-    "text_dim": "#8f96a0",
-    "border": "#303640",
-    "urlbar_bg": "#22262d",
-    "tab_active": "#262b33",
+    # 以 #202020 为基调的中性灰深色
+    "window_bg": "#202020",
+    "toolbar_bg": "#262626",
+    "surface": "#2d2d2d",
+    "surface_hover": "#3a3a3a",
+    "text": "#e6e6e6",
+    "text_dim": "#9f9f9f",
+    "border": "#383838",
+    "urlbar_bg": "#282828",
+    "tab_active": "#2d2d2d",
     "shadow": "rgba(0,0,0,0.45)",
 }
 
@@ -310,18 +311,18 @@ def apply_palette(app: QApplication, theme: str) -> None:
     dark = theme == "dark"
     p = QPalette()
 
-    p.setColor(QPalette.ColorRole.Window, QColor("#14161a" if dark else "#f2f3f6"))
-    p.setColor(QPalette.ColorRole.WindowText, QColor("#e6e8ec" if dark else "#1b1e23"))
-    p.setColor(QPalette.ColorRole.Base, QColor("#22262d" if dark else "#ffffff"))
-    p.setColor(QPalette.ColorRole.AlternateBase, QColor("#1b1e23" if dark else "#fafbfd"))
-    p.setColor(QPalette.ColorRole.Text, QColor("#e6e8ec" if dark else "#1b1e23"))
-    p.setColor(QPalette.ColorRole.Button, QColor("#252a31" if dark else "#e7eaef"))
-    p.setColor(QPalette.ColorRole.ButtonText, QColor("#e6e8ec" if dark else "#1b1e23"))
+    p.setColor(QPalette.ColorRole.Window, QColor("#202020" if dark else "#f2f3f6"))
+    p.setColor(QPalette.ColorRole.WindowText, QColor("#e6e6e6" if dark else "#1b1e23"))
+    p.setColor(QPalette.ColorRole.Base, QColor("#282828" if dark else "#ffffff"))
+    p.setColor(QPalette.ColorRole.AlternateBase, QColor("#262626" if dark else "#fafbfd"))
+    p.setColor(QPalette.ColorRole.Text, QColor("#e6e6e6" if dark else "#1b1e23"))
+    p.setColor(QPalette.ColorRole.Button, QColor("#2d2d2d" if dark else "#e7eaef"))
+    p.setColor(QPalette.ColorRole.ButtonText, QColor("#e6e6e6" if dark else "#1b1e23"))
     p.setColor(QPalette.ColorRole.Highlight, QColor("#4d8dff" if dark else "#2f6fe4"))
-    p.setColor(QPalette.ColorRole.HighlightedText, QColor("#14161a" if dark else "#ffffff"))
-    p.setColor(QPalette.ColorRole.ToolTipBase, QColor("#252a31" if dark else "#fafbfd"))
-    p.setColor(QPalette.ColorRole.ToolTipText, QColor("#e6e8ec" if dark else "#1b1e23"))
-    p.setColor(QPalette.ColorRole.PlaceholderText, QColor("#8f96a0" if dark else "#60666e"))
+    p.setColor(QPalette.ColorRole.HighlightedText, QColor("#202020" if dark else "#ffffff"))
+    p.setColor(QPalette.ColorRole.ToolTipBase, QColor("#2d2d2d" if dark else "#fafbfd"))
+    p.setColor(QPalette.ColorRole.ToolTipText, QColor("#e6e6e6" if dark else "#1b1e23"))
+    p.setColor(QPalette.ColorRole.PlaceholderText, QColor("#9f9f9f" if dark else "#60666e"))
     p.setColor(QPalette.ColorRole.Link, QColor("#4d8dff" if dark else "#2f6fe4"))
 
     app.setPalette(p)
