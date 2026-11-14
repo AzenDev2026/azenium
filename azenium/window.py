@@ -111,7 +111,7 @@ class BrowserWindow(QMainWindow):
         self.new_tab_btn.setText("＋")
         self.new_tab_btn.setToolTip("新建标签页 (Ctrl+T)")
         self.new_tab_btn.setAutoRaise(True)
-        self.new_tab_btn.clicked.connect(self._new_tab)
+        self.new_tab_btn.clicked.connect(lambda: self._new_tab())
         toolbar.addWidget(self.new_tab_btn)
 
         self.settings_btn = QToolButton(toolbar)
@@ -141,6 +141,11 @@ class BrowserWindow(QMainWindow):
         return url
 
     def _new_tab(self, url: str | None = None):
+        """新建标签页。
+
+        注意：QToolButton.clicked / QAction.triggered 会传布尔参数
+        （False），这里用 falsy 归一化——False、None、空串都走默认页。
+        """
         tab = BrowserTab(self.stack)
         self.stack.addWidget(tab)
         index = self.tab_bar.addTab("新标签页")
@@ -151,7 +156,7 @@ class BrowserWindow(QMainWindow):
         tab.url_changed.connect(self._on_tab_url)
         tab.loading_changed.connect(self._on_tab_loading)
 
-        tab.load(url if url is not None else self._default_tab_url())
+        tab.load(url or self._default_tab_url())
 
     def _close_tab(self, index: int):
         if index < 0 or index >= self.stack.count():
@@ -278,7 +283,7 @@ class BrowserWindow(QMainWindow):
         menu = self.menuBar().addMenu("&标签页")
         act = QAction("新建标签页", self)
         act.setShortcut(QKeySequence("Ctrl+T"))
-        act.triggered.connect(self._new_tab)
+        act.triggered.connect(lambda: self._new_tab())
         menu.addAction(act)
 
     def _focus_urlbar(self):

@@ -66,8 +66,12 @@ class BrowserTab(QWidget):
         return self._loading
 
     def load(self, url):
-        """加载 QUrl 或字符串地址。"""
-        self.view.load(url if isinstance(url, QUrl) else QUrl(url))
+        """加载 QUrl 或字符串地址（防御：绝不把 bool 等杂值传给 QUrl）。"""
+        if isinstance(url, QUrl):
+            self.view.load(url)
+        elif isinstance(url, str):
+            self.view.load(QUrl(url))
+        # 其他类型（None/False 等）静默忽略，由调用方保证传入合法地址
 
     def zoom_factor(self) -> float:
         return self.view.zoomFactor()
