@@ -33,52 +33,33 @@ def render(size: int) -> QImage:
     p.setBrush(QBrush(grad))
     p.drawRoundedRect(QRectF(4 * s, 4 * s, 504 * s, 504 * s), 118 * s, 118 * s)
 
-    # ---- 倾斜轨道环（后段，模拟浏览器/网络） ----
-    p.save()
-    p.translate(256 * s, 256 * s)
-    p.rotate(-26)
-    p.setPen(QPen(QColor(255, 255, 255, 120), 15 * s))
+    # ---- 灰色分段环（像 Chrome 一样被切成 3 段） ----
+    # 环中心线半径 191，环宽 38；每段弧 100°，段间缺口 20°
+    ring_r = 191 * s
+    ring_w = 38 * s
+    ring_rect = QRectF(256 * s - ring_r, 256 * s - ring_r, 2 * ring_r, 2 * ring_r)
+    p.setPen(QPen(QColor("#e8e9eb"), ring_w, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap))
     p.setBrush(Qt.BrushStyle.NoBrush)
-    p.drawEllipse(QRectF(-196 * s, -122 * s, 392 * s, 244 * s))
-    p.restore()
+    for start in (-90, 30, 150):
+        p.drawArc(ring_rect, start * 16, 100 * 16)
 
-    # ---- 地球 ----
-    r = 140 * s
-    earth = QRectF(256 * s - r, 256 * s - r, 2 * r, 2 * r)
+    # ---- 中心淡蓝色圆 ----
+    ball_r = 122 * s
+    ball = QRectF(256 * s - ball_r, 256 * s - ball_r, 2 * ball_r, 2 * ball_r)
+    p.setPen(QPen(QColor(255, 255, 255, 90), 5 * s))
+    p.setBrush(QBrush(QColor("#b7d3ff")))
+    p.drawEllipse(ball)
+
+    # 淡蓝圆上的高光（左上柔光，让球更有质感）
+    p.save()
+    hl = QPainterPath()
+    hl.addEllipse(QRectF(256 * s - ball_r * 0.62, 256 * s - ball_r * 0.62,
+                         ball_r * 1.24, ball_r * 1.24))
+    p.setClipPath(hl)
     p.setPen(Qt.PenStyle.NoPen)
-    p.setBrush(QBrush(QColor("#f2f6ff")))
-    p.drawEllipse(earth)
-
-    # 经纬线（裁剪在地球内）
-    p.save()
-    clip = QPainterPath()
-    clip.addEllipse(earth)
-    p.setClipPath(clip)
-    line_pen = QPen(QColor("#3d6fd6"), 7 * s)
-    p.setPen(line_pen)
-    p.setBrush(Qt.BrushStyle.NoBrush)
-    cx, cy = 256 * s, 256 * s
-    # 经线（竖椭圆）
-    for k in (-0.55, 0.0, 0.55):
-        p.drawEllipse(QRectF(cx + k * r - 0.55 * r, cy - r, 1.1 * r, 2 * r))
-    # 纬线（赤道 + 上下两条，横椭圆）
-    p.drawEllipse(QRectF(cx - r, cy - 0.12 * r, 2 * r, 0.24 * r))
-    p.drawEllipse(QRectF(cx - r, cy - 0.62 * r, 2 * r, 0.24 * r))
-    p.drawEllipse(QRectF(cx - r, cy + 0.38 * r, 2 * r, 0.24 * r))
-    p.restore()
-
-    # 地球描边
-    p.setPen(QPen(QColor(255, 255, 255, 210), 6 * s))
-    p.setBrush(Qt.BrushStyle.NoBrush)
-    p.drawEllipse(earth)
-
-    # ---- 轨道环（前段，压在地球上方，更有层次） ----
-    p.save()
-    p.translate(256 * s, 256 * s)
-    p.rotate(-26)
-    p.setPen(QPen(QColor(255, 255, 255, 235), 15 * s))
-    p.setBrush(Qt.BrushStyle.NoBrush)
-    p.drawArc(QRectF(-196 * s, -122 * s, 392 * s, 244 * s), 130 * 16, 210 * 16)
+    p.setBrush(QBrush(QColor(255, 255, 255, 46)))
+    p.drawEllipse(QRectF(256 * s - ball_r * 0.78, 256 * s - ball_r * 1.02,
+                         ball_r * 1.56, ball_r * 1.2))
     p.restore()
 
     p.end()
