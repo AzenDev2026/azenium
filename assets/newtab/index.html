@@ -163,13 +163,18 @@ body {
     }
 })();
 
-// ---------- Search: non-URL input goes to Google, like the address bar ----------
+// ---------- Search: handle navigation in JS (Chromium blocks native form
+// submission from file:// pages with ERR_NETWORK_ACCESS_DENIED) ----------
 document.getElementById("search").addEventListener("submit", function (e) {
+    e.preventDefault(); // never use the native form submission
     const text = document.getElementById("q").value.trim();
-    if (!text) { e.preventDefault(); return; }
+    if (!text) return;
     if (text.includes(".") && !text.includes(" ")) {
-        e.preventDefault();
-        location.href = text.includes("://") ? text : "https://" + text;
+        // Looks like a domain/URL
+        location.href = /^[a-z][a-z0-9+.-]*:\/\//i.test(text) ? text : "https://" + text;
+    } else {
+        // Plain text → Google search, same as the address bar
+        location.href = "https://www.google.com/search?q=" + encodeURIComponent(text);
     }
 });
 
