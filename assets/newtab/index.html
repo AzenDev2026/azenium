@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>新标签页</title>
+<title>New Tab</title>
 <style>
 :root {
     --bg: #202020;
@@ -34,29 +34,33 @@ body {
     transition: background 0.25s;
 }
 
-/* ---------- 中心区：图标 + 名字 + 搜索框（稍低于正中） ---------- */
+/* ---------- Center: brand row + search box (slightly above middle) ---------- */
 .center {
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    transform: translateY(36px);
+    transform: translateY(-56px);
     user-select: none;
 }
+.brandrow {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 30px;
+}
 .logo {
-    width: 96px;
-    height: 96px;
-    border-radius: 22px;
-    margin-bottom: 20px;
+    width: 64px;
+    height: 64px;
+    border-radius: 15px;
     -webkit-user-drag: none;
     filter: drop-shadow(0 6px 18px rgba(0,0,0,0.25));
 }
 .brand {
-    font-size: 40px;
+    font-size: 38px;
     font-weight: 700;
     letter-spacing: 0.5px;
-    margin-bottom: 34px;
 }
 .brand .accent { color: var(--accent); }
 
@@ -87,7 +91,7 @@ body {
 }
 .searchbox input::placeholder { color: var(--dim); }
 
-/* ---------- 左下：天气 ---------- */
+/* ---------- Bottom-left: weather ---------- */
 .weather {
     position: fixed;
     left: 26px;
@@ -109,7 +113,7 @@ body {
 .weather.loading .emoji { animation: pulse 1.2s ease-in-out infinite; }
 @keyframes pulse { 0%,100% { opacity: 0.35; } 50% { opacity: 1; } }
 
-/* ---------- 右下：时钟 ---------- */
+/* ---------- Bottom-right: clock ---------- */
 .clock {
     position: fixed;
     right: 26px;
@@ -123,11 +127,13 @@ body {
 </head>
 <body>
 <div class="center">
-    <img class="logo" src="../azenium.png" alt="Azenium">
-    <div class="brand">Azen<span class="accent">ium</span></div>
+    <div class="brandrow">
+        <img class="logo" src="../azenium.png" alt="Azenium">
+        <div class="brand">Azen<span class="accent">ium</span></div>
+    </div>
     <form class="searchbox" id="search" action="https://www.google.com/search" method="GET">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
-        <input type="text" name="q" id="q" placeholder="搜索或输入网址" autocomplete="off" autofocus>
+        <input type="text" name="q" id="q" placeholder="Search or enter a URL" autocomplete="off" autofocus>
     </form>
 </div>
 
@@ -135,8 +141,8 @@ body {
     <div class="emoji" id="w-emoji">⛅</div>
     <div class="temp" id="w-temp">--°</div>
     <div class="meta">
-        <span class="city" id="w-city">悉尼</span>
-        <span id="w-desc">正在获取天气…</span>
+        <span class="city" id="w-city">Sydney</span>
+        <span id="w-desc">Loading weather…</span>
     </div>
 </div>
 
@@ -146,7 +152,7 @@ body {
 </div>
 
 <script>
-// ---------- 主题参数（由浏览器注入） ----------
+// ---------- Theme parameters (injected by the browser) ----------
 (function () {
     const params = new URLSearchParams(location.search);
     if (params.get("theme") === "light") document.body.classList.add("light");
@@ -156,7 +162,7 @@ body {
     }
 })();
 
-// ---------- 搜索：像地址栏一样，非 URL 输入走 Google 搜索 ----------
+// ---------- Search: non-URL input goes to Google, like the address bar ----------
 document.getElementById("search").addEventListener("submit", function (e) {
     const text = document.getElementById("q").value.trim();
     if (!text) { e.preventDefault(); return; }
@@ -173,7 +179,7 @@ function tick() {
     const mm = String(now.getMinutes()).padStart(2, "0");
     document.getElementById("c-time").textContent = hh + ":" + mm;
     document.getElementById("c-date").textContent = now.toLocaleDateString(
-        "zh-CN", { year: "numeric", month: "long", day: "numeric", weekday: "long" }
+        "en-AU", { year: "numeric", month: "long", day: "numeric", weekday: "long" }
     );
 }
 tick();
@@ -181,15 +187,15 @@ setInterval(tick, 1000 * 20);
 
 // ---------- 天气（Open-Meteo，免费无需密钥） ----------
 const WMO = {
-    0: ["☀️", "晴朗"], 1: ["🌤️", "大致晴朗"], 2: ["⛅", "多云"],
-    3: ["☁️", "阴天"], 45: ["🌫️", "有雾"], 48: ["🌫️", "雾凇"],
-    51: ["🌦️", "小毛毛雨"], 53: ["🌦️", "毛毛雨"], 55: ["🌧️", "大毛毛雨"],
-    61: ["🌧️", "小雨"], 63: ["🌧️", "中雨"], 65: ["🌧️", "大雨"],
-    71: ["🌨️", "小雪"], 73: ["🌨️", "中雪"], 75: ["❄️", "大雪"],
-    80: ["🌦️", "小阵雨"], 81: ["🌧️", "阵雨"], 82: ["⛈️", "强阵雨"],
-    95: ["⛈️", "雷暴"], 96: ["⛈️", "雷暴伴冰雹"], 99: ["⛈️", "强雷暴伴冰雹"],
+    0: ["☀️", "Clear"], 1: ["🌤️", "Mostly clear"], 2: ["⛅", "Partly cloudy"],
+    3: ["☁️", "Overcast"], 45: ["🌫️", "Foggy"], 48: ["🌫️", "Icy fog"],
+    51: ["🌦️", "Light drizzle"], 53: ["🌦️", "Drizzle"], 55: ["🌧️", "Heavy drizzle"],
+    61: ["🌧️", "Light rain"], 63: ["🌧️", "Rain"], 65: ["🌧️", "Heavy rain"],
+    71: ["🌨️", "Light snow"], 73: ["🌨️", "Snow"], 75: ["❄️", "Heavy snow"],
+    80: ["🌦️", "Light showers"], 81: ["🌧️", "Showers"], 82: ["⛈️", "Violent showers"],
+    95: ["⛈️", "Thunderstorm"], 96: ["⛈️", "Storm with hail"], 99: ["⛈️", "Severe storm"],
 };
-const DEFAULT_CITY = { lat: -33.8688, lon: 151.2093, name: "悉尼" };
+const DEFAULT_CITY = { lat: -33.8688, lon: 151.2093, name: "Sydney" };
 
 async function loadWeather() {
     const box = document.getElementById("weather");
@@ -198,15 +204,15 @@ async function loadWeather() {
         const pos = await new Promise((resolve, reject) =>
             navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 3000 })
         );
-        place = { lat: pos.coords.latitude, lon: pos.coords.longitude, name: "当前位置" };
-    } catch (_) { /* 未授权定位就用默认城市 */ }
+        place = { lat: pos.coords.latitude, lon: pos.coords.longitude, name: "Current location" };
+    } catch (_) { /* fall back to the default city when geolocation is denied */ }
     try {
         const url = "https://api.open-meteo.com/v1/forecast?latitude=" + place.lat +
             "&longitude=" + place.lon + "&current=temperature_2m,weather_code";
         const resp = await fetch(url);
         const data = await resp.json();
         const cur = data.current;
-        const [emoji, desc] = WMO[cur.weather_code] || ["🌡️", "未知"];
+        const [emoji, desc] = WMO[cur.weather_code] || ["🌡️", "Unknown"];
         document.getElementById("w-emoji").textContent = emoji;
         document.getElementById("w-temp").textContent = Math.round(cur.temperature_2m) + "°";
         document.getElementById("w-city").textContent = place.name;
@@ -214,7 +220,7 @@ async function loadWeather() {
         box.classList.remove("loading");
     } catch (_) {
         document.getElementById("w-temp").textContent = "--°";
-        document.getElementById("w-desc").textContent = "天气不可用";
+        document.getElementById("w-desc").textContent = "Weather unavailable";
         box.classList.remove("loading");
     }
 }
