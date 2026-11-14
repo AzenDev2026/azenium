@@ -292,6 +292,12 @@ def _resolve(template: str, values: dict, depth: int = 8) -> str:
     return result
 
 
+def accent_color(style: str, theme: str) -> str:
+    """当前风格/主题的主色（含 #，如 "#5170ff"）。"""
+    s = _STYLES.get(style, _STYLES["modern"])
+    return s["accent_dark"] if theme == "dark" else s["accent_light"]
+
+
 def build_qss(style: str, theme: str, font_size: int = 13) -> str:
     """根据风格与主题生成完整样式表。"""
     base = _DARK if theme == "dark" else _LIGHT

@@ -1,5 +1,7 @@
 """Azenium 主窗口：标签栏 + 工具栏（导航/地址栏）+ 网页区。"""
 
+from pathlib import Path
+
 from PyQt6.QtCore import Qt, QUrl
 from PyQt6.QtGui import QAction, QKeySequence, QShortcut
 from PyQt6.QtWidgets import (
@@ -19,6 +21,11 @@ from . import config, theme
 from .browser_tab import BrowserTab, resolve_url
 from .settings_dialog import SettingsDialog
 from .tabbar import BrowserTabBar
+
+# 内置新标签页（本地 HTML）
+NEWTAB_INDEX = (
+    Path(__file__).resolve().parent.parent / "assets" / "newtab" / "index.html"
+)
 
 
 class BrowserWindow(QMainWindow):
@@ -119,6 +126,15 @@ class BrowserWindow(QMainWindow):
     # ==================================================================
     # 标签页管理
     # ==================================================================
+    def _default_tab_url(self) -> QUrl:
+        """新标签页目标：内置极简页（带主题参数）或用户自定义网址。"""
+        if self.cfg.get("new_tab") == "custom":
+            return QUrl(self.cfg["new_tab_url"])
+        url = QUrl.fromLocalFile(str(NEWTAB_INDEX))
+        accent = theme.accent_color(self.cfg["style"], self.cfg["theme"]).lstrip("#")
+        url.setQuery(f"theme={self.cfg['theme']}&accent={accent}")
+        return url
+
     def _new_tab(self, url: str | None = None):
         tab = BrowserTab(self.stack)
         self.stack.addWidget(tab)
@@ -130,7 +146,7 @@ class BrowserWindow(QMainWindow):
         tab.url_changed.connect(self._on_tab_url)
         tab.loading_changed.connect(self._on_tab_loading)
 
-        tab.load(url or self.cfg["new_tab_url"])
+        tab.load(url if url is not None else self._default_tab_url())
 
     def _close_tab(self, index: int):
         if index < 0 or index >= self.stack.count():
@@ -292,3 +308,14 @@ class BrowserWindow(QMainWindow):
         theme.apply_palette(app, self.cfg["theme"])
         qss = theme.build_qss(self.cfg["style"], self.cfg["theme"], self.cfg["font_size"])
         app.setStyleSheet(qss)
+        self._reload_newtab_tabs()
+
+    def _reload_newtab_tabs(self):
+        """主题切换后，刷新仍停在内置新标签页的标签（同步配色）。"""
+        for i in range(self.stack.count()):
+            tab = self.stack.widget(i)
+            if tab is None:
+                continue
+            path = tab.view.url().toLocalFile()
+            if path and path.endswith("index.html"):
+                tab.load(self._default_tab_url())

@@ -11,12 +11,14 @@ CONFIG_FILE = CONFIG_DIR / "settings.json"
 DEFAULT_CONFIG: dict = {
     "theme": "dark",        # dark | light
     "style": "rounded",     # modern | rounded | minimal
+    "new_tab": "builtin",   # builtin（内置极简页）| custom（自定义网址）
     "new_tab_url": "https://azen.dev/search",
     "font_size": 13,
 }
 
 VALID_THEMES = ("dark", "light")
 VALID_STYLES = ("modern", "rounded", "minimal")
+VALID_NEW_TABS = ("builtin", "custom")
 
 
 def load() -> dict:
@@ -36,6 +38,8 @@ def load() -> dict:
         cfg["theme"] = DEFAULT_CONFIG["theme"]
     if cfg["style"] not in VALID_STYLES:
         cfg["style"] = DEFAULT_CONFIG["style"]
+    if cfg["new_tab"] not in VALID_NEW_TABS:
+        cfg["new_tab"] = DEFAULT_CONFIG["new_tab"]
     if not (8 <= cfg["font_size"] <= 20):
         cfg["font_size"] = DEFAULT_CONFIG["font_size"]
     return cfg

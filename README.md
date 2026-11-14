@@ -4,22 +4,27 @@ Azen's first web browser — a lightweight multi-tab browser powered by the **Ch
 
 > Engine: Chromium 130+ (Qt 6.11 WebEngine) · Language: Python 3 + PyQt6
 
-## ✨ Features (v0.2.0)
+## ✨ Features (v0.3.0)
 
 - **Multi-tab browsing**
   - `Ctrl+T` or double-click empty tab bar area → new tab
   - `Ctrl+W`, click ✕ or middle-click a tab → close tab
   - Drag tabs to reorder, `Ctrl+Tab` / `Ctrl+PgUp` to switch
+- **Built-in minimal new tab page**
+  - Centered search box (slightly below middle) with the Azenium logo & name above
+  - Bottom-left **weather widget** (Open-Meteo, no API key; Sydney by default,
+    follows location when permitted) and bottom-right **clock**
+  - Follows the app theme (dark/light) and style accent color
+  - Switchable to a custom URL in Settings
 - **Smart address bar**
   - Type a domain → `https://` is added automatically
-  - Type plain text → searches Google (same behavior as azen.dev/search)
-- **New tab page** opens <https://azen.dev/search> by default (configurable in Settings)
+  - Type plain text → searches Google (same behavior as the new tab search box)
 - **Appearance settings** (⚙ button)
   - UI styles: **Modern** (sharp, blue) / **Rounded** (capsule, purple) / **Minimal** (flat, subtle)
   - Color mode: **Dark** (#202020-based) / **Light**, applied instantly
   - UI font size adjustable (8–20px)
 - **Persistent settings**: everything is stored in `~/.azenium/settings.json`
-- **Desktop integration**: bundled icon (blue ball + split gray ring), installable into the app menu
+- **Desktop integration**: bundled icon, installable into the app menu
 
 ## 🚀 Running
 
@@ -82,10 +87,11 @@ azenium/
 ├── install.sh              # Installer for the app menu
 ├── requirements.txt
 ├── assets/
-│   ├── azenium.png         # Window icon
-│   └── icons/hicolor/…     # Multi-size icons (for installation)
+│   ├── azenium.png         # Window icon (designed by AzenDev2026)
+│   ├── icons/hicolor/…     # Multi-size icons (for installation)
+│   └── newtab/index.html   # Built-in minimal new tab page
 ├── tools/
-│   └── make_icon.py        # Icon generator (QPainter)
+│   └── make_icon.py        # Icon resizer (multi-size from assets/azenium.png)
 └── azenium/
     ├── __init__.py         # App name & version
     ├── config.py           # Settings persistence (~/.azenium/settings.json)

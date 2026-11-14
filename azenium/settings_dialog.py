@@ -69,14 +69,29 @@ class SettingsDialog(QDialog):
         theme_layout.addStretch(1)
         root.addWidget(theme_box)
 
-        # ---- 新标签页地址 & 字号 ------------------------------------------
+        # ---- 新标签页 & 字号 ------------------------------------------
+        tab_box = QGroupBox("新标签页")
+        tab_layout = QVBoxLayout(tab_box)
+        self._newtab_group = QButtonGroup(self)
+        self._builtin_radio = QRadioButton("内置极简页（图标 + 搜索框 + 天气时钟）", tab_box)
+        self._custom_radio = QRadioButton("自定义网址", tab_box)
+        self._newtab_group.addButton(self._builtin_radio)
+        self._newtab_group.addButton(self._custom_radio)
+        (self._builtin_radio if self._cfg.get("new_tab") != "custom"
+         else self._custom_radio).setChecked(True)
+        tab_layout.addWidget(self._builtin_radio)
+        tab_layout.addWidget(self._custom_radio)
+
+        self._url_edit = QLineEdit(self._cfg["new_tab_url"], tab_box)
+        self._url_edit.setPlaceholderText("https://azen.dev/search")
+        self._url_edit.setEnabled(self._cfg.get("new_tab") == "custom")
+        self._custom_radio.toggled.connect(self._url_edit.setEnabled)
+        tab_layout.addWidget(self._url_edit)
+        root.addWidget(tab_box)
+
         form_box = QGroupBox("常规")
         form = QFormLayout(form_box)
         form.setLabelAlignment(Qt.AlignmentFlag.AlignLeft)
-
-        self._url_edit = QLineEdit(self._cfg["new_tab_url"], form_box)
-        self._url_edit.setPlaceholderText("https://azen.dev/search")
-        form.addRow("新标签页地址", self._url_edit)
 
         self._font_spin = QSpinBox(form_box)
         self._font_spin.setRange(8, 20)
@@ -114,6 +129,7 @@ class SettingsDialog(QDialog):
         cfg["style"] = style
         cfg["theme"] = theme
         cfg["font_size"] = self._font_spin.value()
+        cfg["new_tab"] = "custom" if self._custom_radio.isChecked() else "builtin"
         url = self._url_edit.text().strip()
         cfg["new_tab_url"] = url if url else "https://azen.dev/search"
         return cfg
