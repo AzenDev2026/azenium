@@ -276,6 +276,21 @@ QToolTip {
 )
 
 
+def _resolve(template: str, values: dict, depth: int = 8) -> str:
+    """递归替换：处理「值里再嵌套 $变量」的情况。
+
+    例如 rounded 风格的 tab_selected_extra 值是
+    "background: $accent_soft; color: $accent;"，一次性 substitute
+    不会展开这些内层变量，会留下非法 CSS。迭代替换直到没有 $ 残留。
+    """
+    result = template
+    for _ in range(depth):
+        result = Template(result).substitute(values)
+        if "$" not in result:
+            break
+    return result
+
+
 def build_qss(style: str, theme: str, font_size: int = 13) -> str:
     """根据风格与主题生成完整样式表。"""
     base = _DARK if theme == "dark" else _LIGHT
@@ -287,7 +302,7 @@ def build_qss(style: str, theme: str, font_size: int = 13) -> str:
         s["accent_soft_dark"] if theme == "dark" else s["accent_soft_light"]
     )
     values["font_size"] = font_size
-    return _QSS.substitute(values)
+    return _resolve(_QSS.template, values)
 
 
 def apply_palette(app: QApplication, theme: str) -> None:

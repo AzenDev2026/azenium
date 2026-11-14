@@ -39,6 +39,7 @@ class BrowserTab(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._loading = False
         self.view = QWebEngineView(self)
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -48,10 +49,22 @@ class BrowserTab(QWidget):
         self.view.titleChanged.connect(lambda t: self.title_changed.emit(self, t))
         self.view.iconChanged.connect(lambda i: self.icon_changed.emit(self, i))
         self.view.urlChanged.connect(lambda u: self.url_changed.emit(self, u))
-        self.view.loadStarted.connect(lambda: self.loading_changed.emit(self, True))
-        self.view.loadFinished.connect(lambda _: self.loading_changed.emit(self, False))
+        self.view.loadStarted.connect(self._on_load_started)
+        self.view.loadFinished.connect(self._on_load_finished)
 
     # ------------------------------------------------------------------
+    def _on_load_started(self):
+        self._loading = True
+        self.loading_changed.emit(self, True)
+
+    def _on_load_finished(self, _ok: bool):
+        self._loading = False
+        self.loading_changed.emit(self, False)
+
+    def is_loading(self) -> bool:
+        """是否正在加载（QWebEngineView 本身没有 isLoading 接口）。"""
+        return self._loading
+
     def load(self, url):
         """加载 QUrl 或字符串地址。"""
         self.view.load(url if isinstance(url, QUrl) else QUrl(url))

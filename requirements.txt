@@ -1,2 +1,3 @@
-PyQt6>=6.12.0
-PyQt6-WebEngine>=6.140.0
+# 版本必须配套（Qt 6.11.2 全家桶），乱升级会导致 Chromium 崩溃
+PyQt6==6.11.0
+PyQt6-WebEngine==6.11.0

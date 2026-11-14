@@ -204,7 +204,7 @@ class BrowserWindow(QMainWindow):
         history = view.history()
         self.back_btn.setEnabled(history.canGoBack())
         self.fwd_btn.setEnabled(history.canGoForward())
-        self.reload_btn.setEnabled(not view.isLoading())
+        self.reload_btn.setEnabled(not tab.is_loading())
 
     # ==================================================================
     # 地址栏

@@ -24,23 +24,16 @@ Azen 的第一款浏览器 —— 基于 **Chromium 内核**（QtWebEngine）的
 
 ```bash
 cd ~/Desktop/azenium
-./run.sh          # 或 python3 main.py
+./run.sh          # 首次运行会自动创建 .venv 并安装依赖
 ```
 
-依赖安装（Arch / NVazen Linux）：
+`run.sh` 使用项目自带的虚拟环境（`.venv`），里面是配套的
+**PyQt6 6.11 + QtWebEngine 6.11（Chromium 内核）** 全家桶。
 
-```bash
-# 若系统已装 python-pyqt6，只需：
-pip3 install --break-system-packages "PyQt6-WebEngine==6.11.0"
-
-# 从零安装：
-sudo pacman -S python-pyqt6
-pip3 install --break-system-packages "PyQt6-WebEngine==6.11.0"
-```
-
-> ⚠️ 版本说明：系统的 `python-pyqt6 6.12` 对应 Qt 6.12，因此 WebEngine 固定用
-> **6.11.0**（Qt 6.11 库，向后兼容）。不要升级到 6.140（Qt 6.14），否则 Chromium
-> 子进程会因 Qt 库版本不一致而崩溃。
+> ⚠️ 版本必须配套：系统 pacman 的 `python-pyqt6 6.12`（Qt 6.12）不能与 pip 的
+> WebEngine 混用——pip 版 WebEngine 是独立 Qt 库，与系统 Qt 私有 API 不匹配，
+> 会导致 Chromium 子进程崩溃（"Invalid file descriptor to ICU data received"）。
+> 因此本项目固定使用 `.venv` 内的 Qt 6.11.2 全套，`requirements.txt` 锁定版本，**不要升级**。
 
 若在 Wayland 会话下遇到渲染问题（花屏 / 黑屏），编辑 `run.sh`，取消注释
 `export QT_QPA_PLATFORM=xcb` 即可走 XWayland 兼容模式。
