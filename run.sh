@@ -14,4 +14,9 @@ fi
 # 取消下面这行的注释，强制走 XWayland 兼容模式再启动：
 # export QT_QPA_PLATFORM=xcb
 
+# 网络稳定性：关闭 QUIC（UDP，部分路由器/运营商拦截会导致
+# ERR_NETWORK_ACCESS_DENIED）并忽略系统代理，走传统 TCP 直连。
+# 如果你确认网络没问题，可以删掉这行。
+export QTWEBENGINE_CHROMIUM_FLAGS="--no-proxy-server --disable-quic"
+
 exec .venv/bin/python3 main.py "$@"
