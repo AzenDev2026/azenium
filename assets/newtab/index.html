@@ -172,7 +172,7 @@ document.getElementById("search").addEventListener("submit", function (e) {
     }
 });
 
-// ---------- 时钟 ----------
+// ---------- Clock ----------
 function tick() {
     const now = new Date();
     const hh = String(now.getHours()).padStart(2, "0");
@@ -185,7 +185,7 @@ function tick() {
 tick();
 setInterval(tick, 1000 * 20);
 
-// ---------- 天气（Open-Meteo，免费无需密钥） ----------
+// ---------- Weather (Open-Meteo, free, no API key) ----------
 const WMO = {
     0: ["☀️", "Clear"], 1: ["🌤️", "Mostly clear"], 2: ["⛅", "Partly cloudy"],
     3: ["☁️", "Overcast"], 45: ["🌫️", "Foggy"], 48: ["🌫️", "Icy fog"],
