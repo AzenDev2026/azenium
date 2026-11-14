@@ -1,102 +1,104 @@
 # Azenium 🐋
 
-Azen 的第一款浏览器 —— 基于 **Chromium 内核**（QtWebEngine）的轻量多标签浏览器。
+Azen's first web browser — a lightweight multi-tab browser powered by the **Chromium engine** (QtWebEngine).
 
-> 内核版本：Chromium 130+（随 Qt 6.11 WebEngine）｜ 开发语言：Python 3 + PyQt6
+> Engine: Chromium 130+ (Qt 6.11 WebEngine) · Language: Python 3 + PyQt6
 
-## ✨ 功能（v0.2.0）
+## ✨ Features (v0.2.0)
 
-- **多标签页浏览**
-  - `Ctrl+T` 或双击标签栏空白处 → 新建标签
-  - `Ctrl+W`、点击 ✕ 或中键点标签 → 关闭标签
-  - 拖动标签可排序，`Ctrl+Tab` / `Ctrl+PgUp` 切换
-- **智能地址栏**
-  - 输入网址自动补全 `https://`
-  - 输入普通文字 → 自动用 Google 搜索（与 azen.dev/search 网页行为一致）
-- **新标签页** 默认打开 <https://azen.dev/search>（可在设置中修改）
-- **外观设置**（⚙ 按钮打开）
-  - UI 风格：**现代**（直角蓝色）/ **圆润**（胶囊紫色）/ **简洁**（极简扁平）
-  - 外观模式：**深色**（#202020 基调）/ **浅色**，保存后即时生效
-  - 界面字号可调（8–20px）
-- **配置持久化**：所有设置保存在 `~/.azenium/settings.json`
-- **桌面集成**：自带图标（渐变地球设计）、可安装到应用菜单
+- **Multi-tab browsing**
+  - `Ctrl+T` or double-click empty tab bar area → new tab
+  - `Ctrl+W`, click ✕ or middle-click a tab → close tab
+  - Drag tabs to reorder, `Ctrl+Tab` / `Ctrl+PgUp` to switch
+- **Smart address bar**
+  - Type a domain → `https://` is added automatically
+  - Type plain text → searches Google (same behavior as azen.dev/search)
+- **New tab page** opens <https://azen.dev/search> by default (configurable in Settings)
+- **Appearance settings** (⚙ button)
+  - UI styles: **Modern** (sharp, blue) / **Rounded** (capsule, purple) / **Minimal** (flat, subtle)
+  - Color mode: **Dark** (#202020-based) / **Light**, applied instantly
+  - UI font size adjustable (8–20px)
+- **Persistent settings**: everything is stored in `~/.azenium/settings.json`
+- **Desktop integration**: bundled icon (blue ball + split gray ring), installable into the app menu
 
-## 🚀 运行
-
-```bash
-cd ~/Desktop/azenium
-./run.sh          # 首次运行会自动创建 .venv 并安装依赖
-```
-
-## 📦 安装到应用菜单（像正常软件一样使用）
+## 🚀 Running
 
 ```bash
 cd ~/Desktop/azenium
-./install.sh      # 无需 sudo，全部装到用户目录
+./run.sh          # creates .venv and installs dependencies on first run
 ```
 
-装好后在 KDE 应用菜单（Internet 分类）里就能找到 **Azenium**，也可以
-右键桌面 → 创建链接到应用 → Azenium 放到桌面。卸载：删除
-`~/.local/share/applications/azenium.desktop` 即可。
+`run.sh` uses the project's own virtual environment (`.venv`) with a matching
+**PyQt6 6.11 + QtWebEngine 6.11 (Chromium)** toolchain.
 
-### 重新生成图标
+> ⚠️ Versions must match: the system `python-pyqt6 6.12` (Qt 6.12) cannot be mixed
+> with pip's WebEngine — the pip wheel ships its own Qt libraries whose private
+> APIs are incompatible with the system Qt, which crashes the Chromium child
+> process ("Invalid file descriptor to ICU data received"). This project
+> therefore pins the full Qt 6.11.2 toolchain inside `.venv` via
+> `requirements.txt` — **do not upgrade**.
+
+If you hit rendering issues on Wayland (flicker / black page), edit `run.sh`
+and uncomment `export QT_QPA_PLATFORM=xcb` to use XWayland compatibility mode.
+
+## 📦 Install to the app menu (use it like a normal app)
 
 ```bash
-.venv/bin/python tools/make_icon.py   # 重新生成后需再跑 ./install.sh
+cd ~/Desktop/azenium
+./install.sh      # no sudo needed, installs to your user directory only
 ```
 
-`run.sh` 使用项目自带的虚拟环境（`.venv`），里面是配套的
-**PyQt6 6.11 + QtWebEngine 6.11（Chromium 内核）** 全家桶。
+You will find **Azenium** in your KDE app menu (Internet category). You can also
+right-click the desktop → Create link to application → Azenium. To uninstall,
+just delete `~/.local/share/applications/azenium.desktop`.
 
-> ⚠️ 版本必须配套：系统 pacman 的 `python-pyqt6 6.12`（Qt 6.12）不能与 pip 的
-> WebEngine 混用——pip 版 WebEngine 是独立 Qt 库，与系统 Qt 私有 API 不匹配，
-> 会导致 Chromium 子进程崩溃（"Invalid file descriptor to ICU data received"）。
-> 因此本项目固定使用 `.venv` 内的 Qt 6.11.2 全套，`requirements.txt` 锁定版本，**不要升级**。
+### Regenerating the icon
 
-若在 Wayland 会话下遇到渲染问题（花屏 / 黑屏），编辑 `run.sh`，取消注释
-`export QT_QPA_PLATFORM=xcb` 即可走 XWayland 兼容模式。
+```bash
+.venv/bin/python tools/make_icon.py   # then re-run ./install.sh
+```
 
-## ⌨️ 快捷键
+## ⌨️ Keyboard shortcuts
 
-| 快捷键 | 功能 |
+| Shortcut | Action |
 | --- | --- |
-| `Ctrl+T` | 新建标签页 |
-| `Ctrl+W` | 关闭当前标签 |
-| `Ctrl+L` | 聚焦地址栏 |
-| `Ctrl+Tab` / `Ctrl+PgDown` | 下一个标签 |
-| `Ctrl+Shift+Tab` / `Ctrl+PgUp` | 上一个标签 |
-| `Ctrl+1` … `Ctrl+8` | 跳转到第 N 个标签 |
-| `F5` / `Ctrl+R` | 刷新 |
-| `Esc` | 停止加载 |
-| `Alt+←` / `Alt+→` | 后退 / 前进 |
-| `Ctrl+=` / `Ctrl+-` / `Ctrl+0` | 放大 / 缩小 / 重置缩放 |
+| `Ctrl+T` | New tab |
+| `Ctrl+W` | Close current tab |
+| `Ctrl+L` | Focus address bar |
+| `Ctrl+Tab` / `Ctrl+PgDown` | Next tab |
+| `Ctrl+Shift+Tab` / `Ctrl+PgUp` | Previous tab |
+| `Ctrl+1` … `Ctrl+8` | Jump to tab N |
+| `F5` / `Ctrl+R` | Reload |
+| `Esc` | Stop loading |
+| `Alt+←` / `Alt+→` | Back / Forward |
+| `Ctrl+=` / `Ctrl+-` / `Ctrl+0` | Zoom in / out / reset |
 
-## 📁 项目结构
+## 📁 Project structure
 
 ```
 azenium/
-├── main.py                 # 入口（窗口图标 / 桌面集成）
-├── run.sh                  # 启动脚本（自动管理 .venv）
-├── install.sh              # 安装到应用菜单
+├── main.py                 # Entry point (window icon / desktop integration)
+├── run.sh                  # Launcher (manages .venv)
+├── install.sh              # Installer for the app menu
 ├── requirements.txt
 ├── assets/
-│   ├── azenium.png         # 窗口图标
-│   └── icons/hicolor/…     # 多尺寸图标（安装用）
+│   ├── azenium.png         # Window icon
+│   └── icons/hicolor/…     # Multi-size icons (for installation)
 ├── tools/
-│   └── make_icon.py        # 图标生成脚本（QPainter 绘制）
+│   └── make_icon.py        # Icon generator (QPainter)
 └── azenium/
-    ├── __init__.py         # 应用名与版本
-    ├── config.py           # 配置读写（~/.azenium/settings.json）
-    ├── theme.py            # 主题：3 风格 × 深浅色 QSS + 调色板
-    ├── tabbar.py           # 自定义标签栏（双击新建 / 中键关闭）
-    ├── browser_tab.py      # 标签页封装（QWebEngineView + URL 解析）
-    ├── settings_dialog.py  # 设置对话框
-    └── window.py           # 主窗口
+    ├── __init__.py         # App name & version
+    ├── config.py           # Settings persistence (~/.azenium/settings.json)
+    ├── theme.py            # Themes: 3 styles × dark/light QSS + palettes
+    ├── tabbar.py           # Custom tab bar (double-click new / middle-click close)
+    ├── browser_tab.py      # Tab wrapper (QWebEngineView + URL resolution)
+    ├── settings_dialog.py  # Settings dialog
+    └── window.py           # Main window
 ```
 
-## 🗺️ 后续计划
+## 🗺️ Roadmap
 
-- 书签与历史记录
-- 下载管理器
-- 扩展支持
-- 深色模式跟随网页（prefers-color-scheme 注入）
+- Bookmarks & history
+- Download manager
+- Extension support
+- Dark mode for web content (prefers-color-scheme injection)
